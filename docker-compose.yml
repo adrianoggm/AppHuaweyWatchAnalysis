@@ -5,7 +5,7 @@ services:
     image: postgres:13
     environment:
       POSTGRES_USER: usuario
-      POSTGRES_PASSWORD: contraseña
+      POSTGRES_PASSWORD: usuario
       POSTGRES_DB: huawei_watch_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
