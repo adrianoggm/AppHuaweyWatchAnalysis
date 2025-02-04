@@ -45,5 +45,3 @@ env/
 logs/
 *.log
 
-# Env files
-.env
