@@ -1,9 +1,9 @@
 # app/api/api_v1/endpoints/huawei.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ... import schemas, crud
-from ..deps import get_db, get_current_user
-from ...utils import huawei_api
+from .... import schemas, crud
+from ...deps import get_db, get_current_user
+from ....utils import huawei_api
 
 router = APIRouter()
 
