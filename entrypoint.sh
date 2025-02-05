@@ -15,3 +15,4 @@ python -m alembic upgrade head
 
 # Finalmente, ejecuta el comando que se haya pasado (por ejemplo, iniciar uvicorn)
 exec "$@"
+
