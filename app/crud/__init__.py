@@ -5,6 +5,7 @@ from .crud import (
     authenticate_user,
     create_actividad,
     get_actividades,
+    get_salud,
     create_salud,
     create_consulta,
 )

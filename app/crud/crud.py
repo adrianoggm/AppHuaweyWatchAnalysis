@@ -68,6 +68,19 @@ def create_salud(db: Session, salud: schemas.SaludCreate, usuario_id: int):
     db.refresh(db_salud)
     return db_salud
 
+def get_salud(db: Session, usuario_id: int, skip: int = 0, limit: int = 10):
+    """
+    Obtiene una lista de registros de salud para el usuario, con paginación
+    """
+    return(
+        db.query(models.Salud)
+        .filter(models.Salud.usuario_id == usuario_id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+    
 def create_consulta(db: Session, consulta: schemas.ConsultaCreate, usuario_id: int):
     """
     Crea un registro de consulta para el usuario dado.
