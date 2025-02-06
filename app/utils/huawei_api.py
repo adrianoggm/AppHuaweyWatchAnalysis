@@ -6,11 +6,10 @@ from ..core.config import settings
 TOKEN_URL = "https://oauth-login.cloud.huawei.com/oauth2/v3/token"
 DATA_API_URL = "https://api-mifit.huawei.com/healthdata/v1/data"
 
-# Variable para activar o desactivar el modo mock
-MODO_MOCK = True
+MODO_MOCK = True  # Cambia a False cuando tengas acceso a la API real
 
 def obtener_token_autorizacion(codigo_autorizacion: str) -> dict:
-    """Obtiene el token de autorización desde la API de Huawei, o devuelve un token mock si MODO_MOCK está activado."""
+    """Obtiene el token de autorización desde la API de Huawei o devuelve un token mock."""
     if MODO_MOCK:
         return {
             "access_token": "mock_access_token",
@@ -31,42 +30,54 @@ def obtener_token_autorizacion(codigo_autorizacion: str) -> dict:
     response.raise_for_status()
     return response.json()
 
-def generar_datos_mock() -> dict:
-    """Genera datos de salud aleatorios simulando la API de Huawei."""
+def generar_datos_mock(usuario_id: int) -> dict:
+    """Genera datos de salud y actividad por cada hora del día para un usuario."""
     fecha_inicio = datetime(2025, 1, 1)
     fecha_fin = datetime(2025, 1, 31)
     dias = (fecha_fin - fecha_inicio).days
-    
+
     datos_mock = {
-        "steps": [],
-        "heart_rate": [],
-        "sleep": []
+        "actividades": [],
+        "salud": []
     }
     
     for i in range(dias):
-        fecha = fecha_inicio + timedelta(days=i)
-        datos_mock["steps"].append({
-            "date": fecha.strftime("%Y-%m-%d"),
-            "count": random.randint(3000, 15000)
-        })
-        datos_mock["heart_rate"].append({
-            "date": fecha.strftime("%Y-%m-%d"),
-            "resting": random.randint(50, 80),
-            "peak": random.randint(120, 180)
-        })
-        datos_mock["sleep"].append({
-            "date": fecha.strftime("%Y-%m-%d"),
-            "duration": random.randint(300, 600),
-            "deep_sleep": random.randint(100, 300),
-            "light_sleep": random.randint(100, 300)
-        })
+        for hora in range(24):  # 24 horas por día
+            timestamp = fecha_inicio + timedelta(days=i, hours=hora)
+            
+            # Actividad física (tabla `actividades`)
+            pasos = random.randint(0, 500)  # Puede haber horas sin pasos (0)
+            calorias = round(random.uniform(5, 60), 2)
+            distancia = round(pasos * random.uniform(0.5, 1.5) / 1000, 2)  # km
+
+            datos_mock["actividades"].append({
+                "usuario_id": usuario_id,
+                "tipo": "caminata" if pasos > 0 else "sedentario",
+                "pasos": pasos,
+                "calorias": calorias,
+                "distancia": distancia,
+                "fecha": timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            })
+
+            # Datos de salud (tabla `salud`)
+            frecuencia_cardiaca = random.randint(50, 130)
+            calidad_sueno = round(random.uniform(1, 10), 2) if 22 <= hora or hora <= 6 else None
+            nivel_estres = round(random.uniform(1, 100), 2)
+
+            datos_mock["salud"].append({
+                "usuario_id": usuario_id,
+                "frecuencia_cardiaca": frecuencia_cardiaca,
+                "calidad_sueno": calidad_sueno,
+                "nivel_estres": nivel_estres,
+                "fecha": timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            })
 
     return datos_mock
 
-def obtener_datos_salud(token_acceso: str) -> dict:
-    """Obtiene los datos de salud desde la API de Huawei o devuelve datos mock si MODO_MOCK está activado."""
+def obtener_datos_salud(token_acceso: str, usuario_id: int) -> dict:
+    """Obtiene los datos de salud desde la API de Huawei o devuelve datos mock."""
     if MODO_MOCK:
-        return generar_datos_mock()
+        return generar_datos_mock(usuario_id)
 
     headers = {
         "Authorization": f"Bearer {token_acceso}",
