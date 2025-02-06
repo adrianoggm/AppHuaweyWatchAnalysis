@@ -14,7 +14,8 @@ CREATE TABLE actividades (
     calorias FLOAT,
     distancia FLOAT,
     fecha TIMESTAMP DEFAULT NOW(),
-    usuario_id INTEGER REFERENCES usuarios(id)
+    usuario_id INTEGER REFERENCES usuarios(id),
+    CONSTRAINT unique_actividad UNIQUE (usuario_id, fecha)  -- 🔥 Restringe duplicados
 );
 
 CREATE TABLE salud (
@@ -23,8 +24,10 @@ CREATE TABLE salud (
     calidad_sueno FLOAT,
     nivel_estres FLOAT,
     fecha TIMESTAMP DEFAULT NOW(),
-    usuario_id INTEGER REFERENCES usuarios(id)
+    usuario_id INTEGER REFERENCES usuarios(id),
+    CONSTRAINT unique_salud UNIQUE (usuario_id, fecha)  -- 🔥 Restringe duplicados
 );
+
 
 CREATE TABLE consultas (
     id SERIAL PRIMARY KEY,
